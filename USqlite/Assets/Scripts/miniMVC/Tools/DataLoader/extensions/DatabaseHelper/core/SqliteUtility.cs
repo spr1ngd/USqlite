@@ -3,6 +3,7 @@ using System;
 using System.Diagnostics;
 using Mono.Data.Sqlite;
 using System.IO;
+using USqlite;
 using Console = UnityEngine.Debug;
 
 namespace miniMVC.USqlite
@@ -321,5 +322,13 @@ namespace miniMVC.USqlite
         }
 
         #endregion
+    }
+
+    public class Sqlite3
+    {
+        public void Query( string tableName )
+        {
+            var data = new QueryCommand(null).Where("id<5").Descending().Execute();
+        }
     }
 }

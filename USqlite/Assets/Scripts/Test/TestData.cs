@@ -1,12 +1,13 @@
 ﻿
 using miniMVC.USqlite;
 using UnityEngine;
+using USqlite;
 
 namespace miniMVC
 {
     public class Point
     {
-        [USqlitePrimaryKey]
+        [PrimaryKey]
         [USqliteSerialize]
         public int ID;
         [USqliteSerialize] public string POSITION;

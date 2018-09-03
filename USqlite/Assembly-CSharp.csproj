@@ -59,14 +59,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\Attributes\USqlitePrimaryKeyAttribute.cs" />
+    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\Attributes\AutoIncrementAttribute.cs" />
+    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\Attributes\NotNullAttribute.cs" />
+    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\Attributes\PrimaryKeyAttribute.cs" />
+    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\Attributes\UniqueAttribute.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\Attributes\USqliteSerializeAttribute.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\DatabaseTable.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\DeserializeFactory.cs" />
+    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\Exceptions\USqliteException.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\SerializeFactory.cs" />
+    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\SqlCommands\BaseCommand.cs" />
+    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\SqlCommands\QueryCommand.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\SqliteCustomSerializeFunc.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\SqliteDatabase.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\SqliteUtility.cs" />
+    <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\core\TableMapper.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\DatabaseHelper\DatabaseHelper.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\DataLoader\extensions\JsonHelper\JsonHelper.cs" />
     <Compile Include="Assets\Scripts\miniMVC\Tools\FileIO\FileIO.cs" />

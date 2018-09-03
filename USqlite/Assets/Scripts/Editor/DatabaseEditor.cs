@@ -14,7 +14,7 @@ namespace miniMVC.USqlite
     {
         private const string TABLENAME = "Point";
 
-        //[Test]
+        //[NUnit.Framework.]
         [MenuItem("Database Utility/Sqlite/Create Database")]
         public static void CreateDatabase()
         {
@@ -257,6 +257,7 @@ namespace miniMVC.USqlite
             {
                 string strA = "APple";
                 string strB = "apple";
+
                 //if (strA.ToUpper() == strB.ToUpper())
                 //{
 
@@ -267,9 +268,7 @@ namespace miniMVC.USqlite
 
                 }
             }
-
             watch.Stop();
-
             UnityEngine.Debug.Log(string.Format("比较：[{0}] ",watch.Elapsed));
         }
     }
