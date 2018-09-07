@@ -1,8 +1,11 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Mono.Data.Sqlite;
 using System.IO;
+using System.Reflection;
+using System.Reflection.Emit;
 using USqlite;
 using Console = UnityEngine.Debug;
 
@@ -242,93 +245,97 @@ namespace miniMVC.USqlite
                 Delete(tableName,metaData,condition);
             return null;
         }
-        
+
+        #endregion
+
         public static T QueryObject<T>(string tableName,string[] columeNames = null,string condition = null)
         {
             deserializeFactory.Clear();
-            SqliteTable dbTable = new SqliteTable();
-            SqliteCell rawCell = new SqliteCell();
             Stopwatch watch = new Stopwatch();
-            watch.Start();
             SqliteDataReader reader = m_currentDB.Query(tableName,columeNames,condition);
+
+            List<Point> points = new List<Point>();
+            CreateInstanceDelegate instanceFunc = GetInstance(typeof(Point));
+            GetFieldInfos(typeof(Point));
             while(reader.Read())
             {
-                var metaData = new SqliteRow();
-                for(int rowId = 0; rowId < reader.FieldCount; rowId++)
+                var point = instanceFunc();
+                for (int columnId = 0; columnId < reader.FieldCount; columnId++)
                 {
-                    var celldata = (SqliteCell)rawCell.Clone();
-                    if (dbTable.ContainRow(rowId))
-                    {
-                        var row = dbTable.GetRow(rowId);
-                        celldata.name = row.rowName;
-                        celldata.type = row.rowType;
-                        celldata.upperName = row.rowUpperName;
-                        celldata.value = row.GetValue(rowId);
-                    }
-                    else
-                    {
-                        var name = reader.GetName(rowId);
-                        var upperName = name.ToUpper();
-                        var type = reader.GetProviderSpecificFieldType(rowId);
-                        celldata.name = name;
-                        celldata.upperName = upperName;
-                        celldata.type = type;
-                        Func<int,object> getValue = null;
-                        if(celldata.type == typeof(Int32))
-                            getValue = ROWID => reader.GetInt32(ROWID);
-                        else if(celldata.type == typeof(Int64))
-                            getValue = ROWID => reader.GetInt32(ROWID);
-                        else if(celldata.type == typeof(string))
-                            getValue = ROWID => reader.GetString(ROWID);
-                        else if(celldata.type == typeof(bool))
-                            getValue = ROWID => reader.GetBoolean(ROWID);
-                        else if (celldata.type == typeof(float))
-                            getValue = ROWID => reader.GetFloat(ROWID);
-                        if( null != getValue )
-                            celldata.value = getValue(rowId);
-                        dbTable.AddRow(rowId,type,name,upperName,getValue);
-                    }
-                    metaData.AddCell(celldata);
+                    var columnType = reader.GetProviderSpecificFieldType(columnId);
+                    var columnName = reader.GetName(columnId);
+                    var readFunc = GetReadFunc(columnType);
+                    watch.Start();
+                    object data = readFunc(reader,columnId);
+                    FieldInfo fieldInfo = null;
+                    if (m_tableMapper.TryGetField(columnName, out fieldInfo))
+                        fieldInfo.SetValue(point,data);
                 }
-                deserializeFactory.dbMetadata.Add(metaData);
+                points.Add((Point)point);
             }
-            watch.Stop();
-            Console.Log(string.Format("读取耗时:{0}",watch.Elapsed));
+            return default(T);
+        }
+        
+        private static readonly IDictionary<Type,CreateInstanceDelegate> m_instanceDelegateDic = new Dictionary<Type, CreateInstanceDelegate>();
+        private static readonly IDictionary<Type,List<FieldInfo>> m_filedInfos = new Dictionary<Type,List<FieldInfo>>();
+        private static readonly Dictionary<Type,Func<SqliteDataReader,int,object>> m_readFuncsDic = new Dictionary<Type,Func<SqliteDataReader,int,object>>();
+        private static readonly TableMapper m_tableMapper = new TableMapper();
 
-            watch.Reset();
-            watch.Start();
-            object deserializeData = deserializeFactory.dbMetadata;
-            if(deserializeFactory.dbMetadata.Count <= 0)
+        private static CreateInstanceDelegate GetInstance( Type type )
+        {
+            CreateInstanceDelegate instanceDelegate = null;
+            if (!m_instanceDelegateDic.TryGetValue(type, out instanceDelegate))
             {
-                Console.Log("未查训到相关数据");
-                return default(T);
+                DynamicMethod dynamicMethod = new DynamicMethod("CreateInstance",type,new Type[0]);
+                ConstructorInfo ctorInfo = type.GetConstructor(new Type[0]);
+                ILGenerator ilGen = dynamicMethod.GetILGenerator();
+                ilGen.Emit(OpCodes.Newobj,ctorInfo);
+                ilGen.Emit(OpCodes.Ret);
+                instanceDelegate = (CreateInstanceDelegate)dynamicMethod.CreateDelegate(typeof(CreateInstanceDelegate));
+                m_instanceDelegateDic.Add(type,instanceDelegate);
             }
-            if(deserializeFactory.dbMetadata.Count <= 1)
+            return instanceDelegate;
+        } 
+
+        private static List<FieldInfo> GetFieldInfos( Type type )
+        {
+            List<FieldInfo> result = null;
+            if (!m_filedInfos.TryGetValue(type,out result))
             {
-                deserializeData = deserializeFactory.dbMetadata[0];
-                if(deserializeFactory.dbMetadata[0].cellData.Count <= 0)
+                result = new List<FieldInfo>();
+                var fieldInfos = type.GetFields();
+                foreach (var fieldInfo in fieldInfos)
                 {
-                    Console.Log("查询数据为空");
-                    return default(T);
+                    var att = fieldInfo.GetCustomAttributes(typeof(ColumnAttribute), false);
+                    if (att.Length > 0)
+                    {
+                        result.Add(fieldInfo);
+                        m_tableMapper.AddFiledInfo(fieldInfo.Name.ToUpper(),fieldInfo);
+                    }
                 }
-                if(deserializeFactory.dbMetadata[0].cellData.Count <= 1)
-                    deserializeData = deserializeFactory.dbMetadata[0].cellData[0];
+                m_filedInfos.Add(type,result);
             }
-            var result = deserializeFactory.DeserializeObject(typeof(T),deserializeData);
-            reader.Close();
-            watch.Stop();
-            Console.Log(string.Format("反序列化耗时:{0}",watch.Elapsed));
-            return (T)result;
+            return result;
         }
 
-        #endregion
-    }
-
-    public class Sqlite3
-    {
-        public void Query( string tableName )
+        private static Func<SqliteDataReader, int, object> GetReadFunc( Type propertyFileType )
         {
-            var data = new QueryCommand(null).Where("id<5").Descending().Execute();
+            Func<SqliteDataReader, int, object> func = null;
+            if(!m_readFuncsDic.TryGetValue(propertyFileType,out func))
+            {
+                if(propertyFileType == typeof(Int32))
+                    func = (reader,columnId) => reader.GetInt32(columnId);
+                else if(propertyFileType == typeof(Int64))
+                    func = (reader,columnId) => reader.GetInt64(columnId);
+                else if(propertyFileType == typeof(string))
+                    func = (reader,columnId) => reader.GetString(columnId);
+                else if(propertyFileType == typeof(bool))
+                    func = (reader,columnId) => reader.GetBoolean(columnId);
+                else if(propertyFileType == typeof(float))
+                    func = (reader,columnId) => reader.GetFloat(columnId);
+                m_readFuncsDic.Add(propertyFileType,func);
+            }
+            return func;
         }
     }
 }

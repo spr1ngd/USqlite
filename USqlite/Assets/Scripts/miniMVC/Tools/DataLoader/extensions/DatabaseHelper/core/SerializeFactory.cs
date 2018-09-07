@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using USqlite;
 
 namespace miniMVC.USqlite
 {
@@ -123,7 +124,7 @@ namespace miniMVC.USqlite
             if(null != propertyInfo)
             {
                 SqliteCell cellData = new SqliteCell();
-                var pkAtt = propertyInfo.GetCustomAttributes(typeof(USqlitePrimaryKeyAttribute),true);
+                var pkAtt = propertyInfo.GetCustomAttributes(typeof(PrimaryKeyAttribute),true);
                 if(pkAtt.Length > 0)
                     cellData.isPrimaryKey = true;
                 cellData.type = dbDataType;
@@ -136,7 +137,7 @@ namespace miniMVC.USqlite
             if(null != fieldInfo)
             {
                 SqliteCell cellData = new SqliteCell();
-                var pkAtt = fieldInfo.GetCustomAttributes(typeof(USqlitePrimaryKeyAttribute),true);
+                var pkAtt = fieldInfo.GetCustomAttributes(typeof(PrimaryKeyAttribute),true);
                 if(pkAtt.Length > 0)
                     cellData.isPrimaryKey = true;
                 cellData.type = dbDataType;
@@ -154,7 +155,7 @@ namespace miniMVC.USqlite
             if(null != propertyInfo)
             {
                 SqliteCell cellData = new SqliteCell();
-                var pkAtt = propertyInfo.GetCustomAttributes(typeof(USqlitePrimaryKeyAttribute),true);
+                var pkAtt = propertyInfo.GetCustomAttributes(typeof(PrimaryKeyAttribute),true);
                 if(pkAtt.Length > 0)
                     cellData.isPrimaryKey = true;
                 cellData.type = dbDataType;
@@ -166,7 +167,7 @@ namespace miniMVC.USqlite
             if(null != fieldInfo)
             {
                 SqliteCell cellData = new SqliteCell();
-                var pkAtt = fieldInfo.GetCustomAttributes(typeof(USqlitePrimaryKeyAttribute),true);
+                var pkAtt = fieldInfo.GetCustomAttributes(typeof(PrimaryKeyAttribute),true);
                 if(pkAtt.Length > 0)
                     cellData.isPrimaryKey = true;
                 cellData.type = dbDataType;

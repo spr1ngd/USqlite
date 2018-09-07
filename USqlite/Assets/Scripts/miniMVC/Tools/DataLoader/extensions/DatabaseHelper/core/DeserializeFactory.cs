@@ -4,6 +4,9 @@ using System.Collections;
 using System.Diagnostics;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection.Emit;
+using USqlite;
+using Debug = UnityEngine.Debug;
 
 namespace miniMVC.USqlite
 {
@@ -73,6 +76,30 @@ namespace miniMVC.USqlite
 
     public delegate object SqliteDeserializeFunc(Type type,object data);
 
+    public delegate object CreateInstanceDelegate();
+
+    public class InstanceFactory
+    {
+        private readonly IDictionary<Type, CreateInstanceDelegate> m_instanceDic = null;
+
+        public InstanceFactory()
+        {
+            m_instanceDic = new Dictionary<Type, CreateInstanceDelegate>();
+        }
+
+        public void AddNewInstance( Type type, CreateInstanceDelegate @delegate )
+        {
+            if(m_instanceDic.ContainsKey(type))
+                return;
+            m_instanceDic.Add(type,@delegate);
+        }
+
+        public bool TryGetInstance( Type type ,out CreateInstanceDelegate instanceDelegate )
+        {
+            return m_instanceDic.TryGetValue(type, out instanceDelegate);
+        }
+    }
+
     public class DeserializeFunc
     {
         private readonly IDictionary<Type,SqliteDeserializeFunc> funcs = null;
@@ -101,10 +128,12 @@ namespace miniMVC.USqlite
 
         private readonly IDictionary<Type,ClassInfo> m_classInfoDic = null;
         private readonly DeserializeFunc m_deserializeFunc = null;
+        private readonly InstanceFactory m_instanceFactory = null;
 
         public DeserializeFactory(SqliteCustomSerializeFunc customSerializeFunc)
         {
             m_customSerializeFunc = customSerializeFunc;
+            m_instanceFactory = new InstanceFactory();
             m_deserializeFunc = new DeserializeFunc();
             m_classInfoDic = new Dictionary<Type,ClassInfo>();
             RegisterDeserializeFunc();
@@ -130,6 +159,7 @@ namespace miniMVC.USqlite
         public object DeserializeObject(Type type,object data)
         {
             object result = null;
+            watch.Start();
             SqliteDeserializeFunc sqliteDeserializeFunc = null;
             m_deserializeFunc.TryGetFunc(type,out sqliteDeserializeFunc);
             if(null != sqliteDeserializeFunc)
@@ -137,6 +167,7 @@ namespace miniMVC.USqlite
                 result = sqliteDeserializeFunc(type,data);
                 return result;
             }
+            watch.Stop();
             if(m_customSerializeFunc.ContainDeserializeFunc(type))
             {
                 SqliteCustomSerializeFunc.CustomDeserializeFunc deserializeFunc = null;
@@ -155,11 +186,13 @@ namespace miniMVC.USqlite
                         object value = DeserializeObject(objectType,dbMetadata[i]);
                         array.SetValue(value,i);
                     }
+                    UnityEngine.Debug.Log(watch.Elapsed);
                     return result;
                 });
             }
             else if(type.IsClass) // object | ilist | idictionary
             {
+                // todo 将委托添加到这里导致异常
                 m_deserializeFunc.AddFunc(type,(TYPE,DATA) =>
                 {
                     if(null != TYPE.GetInterface(typeof(IList).ToString()))
@@ -186,7 +219,19 @@ namespace miniMVC.USqlite
                     }
                     // type.IsObject == true
                     {
-                        result = Activator.CreateInstance(TYPE);
+                        CreateInstanceDelegate createInstanceDelegate = null;
+                        if (!m_instanceFactory.TryGetInstance(TYPE, out createInstanceDelegate))
+                        {
+                            DynamicMethod dynamicMethod = new DynamicMethod("DeserializeObject",TYPE,new Type[0]);
+                            ConstructorInfo constructorMethod = TYPE.GetConstructor(new Type[0]);
+                            ILGenerator ilGen = dynamicMethod.GetILGenerator();
+                            ilGen.Emit(OpCodes.Newobj,constructorMethod);
+                            ilGen.Emit(OpCodes.Ret);
+                            createInstanceDelegate = (CreateInstanceDelegate)dynamicMethod.CreateDelegate(typeof(CreateInstanceDelegate));
+                            m_instanceFactory.AddNewInstance(TYPE,createInstanceDelegate);
+                        }
+                        result = createInstanceDelegate();
+
                         SqliteRow metaData = DATA as SqliteRow;
                         if(null != metaData)
                         {

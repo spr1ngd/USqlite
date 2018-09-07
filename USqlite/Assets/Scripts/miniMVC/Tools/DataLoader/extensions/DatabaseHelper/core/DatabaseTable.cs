@@ -1,21 +1,111 @@
 ﻿
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using Mono.Data.Sqlite;
 
-namespace miniMVC.USqlite
+namespace USqlite
 {
+    // todo sqliteConnection 创建 command 
+    // todo command 赋值sql语句执行
+    public class DatabaseTable<T> : IEnumerable<T>
+    {
+        private BaseCommand m_command = null;
+        private SqliteConnection m_connection = null;
+
+        public DatabaseTable(SqliteConnection connection)
+        {
+            this.m_connection = connection;
+        }
+
+        public DatabaseTable<T> Select()
+        {
+            return Select(typeof(T).Name);
+        }
+
+        public DatabaseTable<T> Select( string tableName )
+        {
+            m_command = new SelectCommand(m_connection,tableName);
+            return this;
+        }
+
+        public DatabaseTable<T> Insert()
+        {
+            return Insert(typeof(T).Name);
+        }
+
+        public DatabaseTable<T> Insert( string tableName )
+        {
+            m_command = new InsertCommand(m_connection,tableName);
+            return this;
+        }
+
+        public DatabaseTable<T> Update()
+        {
+            return Update(typeof(T).Name);
+        }
+
+        public DatabaseTable<T> Update( string tableName )
+        {
+            m_command = new UpdateCommand(m_connection,tableName);
+            return this;
+        }
+
+        public DatabaseTable<T> Delete()
+        {
+            return Delete(typeof(T).Name);
+        }
+
+        public DatabaseTable<T> Delete( string tableName )
+        {
+            m_command = new DeleteCommand(m_connection,tableName);
+            return this;
+        }
+
+        public DatabaseTable<T> Where(Expression<Func<T,bool>> whereExpression)
+        {
+            m_command.Where(whereExpression);
+            return this;
+        }
+
+        public DatabaseTable<T> OrderBy()
+        {
+            return this;
+        }
+
+        public IEnumerable<T> Execute()
+        {
+            var dataReader = m_command.Execute();
+            // todo 在这里处理数据
+            // todo ORM 将SqliteDataReader 映射为 IEnumerable<T>
+            return null;
+        }
+
+        public IEnumerator<T> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+    }
+
+
     public class SqliteTable
     {
-        private readonly IDictionary<int, DatabaseRow> m_dbRows = null;
+        private readonly IDictionary<int,DatabaseRow> m_dbRows = null;
 
         public SqliteTable()
         {
-            m_dbRows = new Dictionary<int, DatabaseRow>();
+            m_dbRows = new Dictionary<int,DatabaseRow>();
         }
 
-        public void AddRow(int id,Type rowType,string rowName , string rowUpperName ,Func<int,object> getValue)
+        public void AddRow(int id,Type rowType,string rowName,string rowUpperName,Func<int,object> getValue)
         {
-            if (!m_dbRows.ContainsKey(id))
+            if(!m_dbRows.ContainsKey(id))
             {
                 m_dbRows.Add(id,new DatabaseRow()
                 {
@@ -27,14 +117,14 @@ namespace miniMVC.USqlite
             }
         }
 
-        public bool ContainRow( int rowId )
+        public bool ContainRow(int rowId)
         {
             return m_dbRows.ContainsKey(rowId);
         }
 
-        public string GetRow(int rowId,ref Type type,ref string upperName ,ref object value)
+        public string GetRow(int rowId,ref Type type,ref string upperName,ref object value)
         {
-            if (m_dbRows.ContainsKey(rowId))
+            if(m_dbRows.ContainsKey(rowId))
             {
                 var row = m_dbRows[rowId];
                 type = row.rowType;
@@ -45,7 +135,7 @@ namespace miniMVC.USqlite
             return null;
         }
 
-        public DatabaseRow GetRow( int rowId )
+        public DatabaseRow GetRow(int rowId)
         {
             return m_dbRows[rowId];
         }
@@ -81,7 +171,7 @@ namespace miniMVC.USqlite
             get
             {
                 string[] names = new string[cellData.Count];
-                for (int i = 0; i < names.Length; i++)
+                for(int i = 0; i < names.Length; i++)
                     names[i] = cellData[i].name;
                 return names;
             }

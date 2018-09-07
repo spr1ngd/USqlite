@@ -2,28 +2,20 @@
 using System.Data;
 using System.Data.Common;
 using Mono.Data.Sqlite;
+using USqlite;
 
 namespace miniMVC.USqlite
 {
     public delegate void SqliteTransactionDelegate();
 
-    // todo 添加类Linq语句提升调用连贯性
-
-    /// <summary>
-    /// 建立与Sqlite数据库的连接
-    /// </summary>
     public class SqliteDatabase
     {
         private readonly string dbPath = null;
-        private SqliteConnection connection = null;
+        private SqliteConnection m_connection = null;
         private SqliteCommand command = null;
         private SqliteTransaction transaction = null;
         private SqliteDataReader dbReader = null;
 
-        /// <summary>
-        /// 构造与Sqlite数据库实例的连接
-        /// </summary>
-        /// <param name="dbPath"></param>
         public SqliteDatabase( string dbPath )
         {
             this.dbPath = dbPath;
@@ -42,9 +34,9 @@ namespace miniMVC.USqlite
             }
             try
             {
-                connection = new SqliteConnection("data source="+ dbPath);
-                connection.Open();
-                UnityEngine.Debug.Log(string.Format("<color=red>成功连接到数据库 [{0}] </color>",dbPath));
+                m_connection = new SqliteConnection("data source="+ dbPath);
+                m_connection.Open();
+                UnityEngine.Debug.Log(string.Format("<color=green>成功连接到数据库 [{0}] </color>",dbPath));
             }
             catch(DbException exception)
             {
@@ -57,20 +49,21 @@ namespace miniMVC.USqlite
         /// </summary>
         public void CloseConnection()
         {
-            if(null != connection) connection.Close();
+            if(null != m_connection) m_connection.Close();
             if(null != command) command.Cancel();
             if(null != dbReader) dbReader.Close();
             transaction = null;
-            connection = null;
+            m_connection = null;
             command = null;
             dbReader = null;
+            UnityEngine.Debug.Log(string.Format("<color=red>关闭数据库连接 [{0}] </color>",dbPath));
         }
 
         #region table functions 创建表 | 删除表 等表操作
 
         public void BeginTransaction( SqliteTransactionDelegate action )
         {
-            transaction = connection.BeginTransaction();
+            transaction = m_connection.BeginTransaction();
             try
             {
                 if (null != action)
@@ -109,7 +102,7 @@ namespace miniMVC.USqlite
         // todo 重构到SqliteTable中
         #region database base functions 增 | 删 | 改 | 查
 
-        #region Query
+        #region Select
         
         public SqliteDataReader Query(string tableName,string[] columeNames = null,string condition = null)
         {
@@ -236,11 +229,11 @@ namespace miniMVC.USqlite
             // todo 多次构造的问题
             //Stopwatch watch = new Stopwatch();
             //watch.Start();
-            //UnityEngine.Debug.Log(string.Format("Query : <color=#FF00FF>[{0}]</color>",sql));
+            //UnityEngine.Debug.Log(string.Format("Select : <color=#FF00FF>[{0}]</color>",sql));
             SqliteDataReader result = null;
             try
             {
-                command = connection.CreateCommand();
+                command = m_connection.CreateCommand();
                 command.CommandText = sql;
                 if(null != sqliteParam && sqliteParam.Length > 0)
                     command.Parameters.AddRange(sqliteParam);
@@ -257,10 +250,27 @@ namespace miniMVC.USqlite
         private void CheckConnection()
         {
             // 重启已经关闭或断开的数据库连接
-            if (connection.State.Equals(ConnectionState.Closed) || connection.State.Equals(ConnectionState.Broken))
-                connection.Open();
+            if (m_connection.State.Equals(ConnectionState.Closed) || m_connection.State.Equals(ConnectionState.Broken))
+                m_connection.Open();
         }
 
         #endregion
+
+        public BaseCommand CreateCommand(string tableName,SqlCommandType commandType)
+        {
+            switch (commandType)
+            {
+                case SqlCommandType.Select:
+                    return new SelectCommand(this.m_connection,tableName);
+                case SqlCommandType.Insert:
+                    return new InsertCommand(this.m_connection,tableName);
+                case SqlCommandType.Update:
+                    return new UpdateCommand(this.m_connection,tableName);
+                case SqlCommandType.Delete:
+                    return new DeleteCommand(this.m_connection,tableName);
+                default:
+                    return null;
+            }
+        }
     }
 }
