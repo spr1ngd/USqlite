@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USqlite", "Assembly-CSharp.csproj", "{770136DB-804C-1158-E186-6127365975C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USqlite", "Tests.csproj", "{263DCEC3-3600-85B1-BF12-13E8B91B478A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "USqlite", "Assembly-CSharp-Editor.csproj", "{911714E3-A280-5E3C-C6FB-559B256BFB5C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{770136DB-804C-1158-E186-6127365975C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{770136DB-804C-1158-E186-6127365975C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{770136DB-804C-1158-E186-6127365975C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{770136DB-804C-1158-E186-6127365975C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{263DCEC3-3600-85B1-BF12-13E8B91B478A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{263DCEC3-3600-85B1-BF12-13E8B91B478A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{263DCEC3-3600-85B1-BF12-13E8B91B478A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{263DCEC3-3600-85B1-BF12-13E8B91B478A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{911714E3-A280-5E3C-C6FB-559B256BFB5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{911714E3-A280-5E3C-C6FB-559B256BFB5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{911714E3-A280-5E3C-C6FB-559B256BFB5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{911714E3-A280-5E3C-C6FB-559B256BFB5C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
