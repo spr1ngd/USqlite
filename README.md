@@ -88,3 +88,9 @@ Insert | :white_check_mark:
 Update | :white_check_mark:
 Select | :white_check_mark:
 Delete | :white_check_mark:
+AND/OR | :white_check_mark:
+Like | :x:
+Glob | :x:
+Limit | :x:
+Order By | :x:
+Json | :x:
