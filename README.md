@@ -1,18 +1,34 @@
 # USqlite
+
+## 关于
+
 >  支持unity3d对象的Sqlite工具
 
 > 支持x64 x86，暂不支持Android、IOS
 
-## 更新内容
+## 使用案例
 
-- 添加对Expression Tree获取属性值的功能
+1. 连接数据库
 
-## 支持基础类型、untiy3d类型、自定义类型注册的读写操作
-1. CreateTable
-2. DropTable
-3. Select
-4. Insert Into
-5. Update
-6. Delete
+2. 闭关数据库连接
 
-##  支持Sql语句的拓展
+3. 创建表
+
+4. 删除表
+
+5. 插入
+
+6. 删除
+
+7. 修改
+
+8. 查询
+
+## 支持接口
+
+SQL | Status
+----|----
+Insert | :green_check_mark:
+Update | :green_check_mark:
+Select | :green_check_mark:
+Delete | :green_check_mark:
