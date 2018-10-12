@@ -28,7 +28,7 @@
 
 SQL | Status
 ----|----
-Insert | :green_check_mark:
-Update | :green_check_mark:
-Select | :green_check_mark:
-Delete | :green_check_mark:
+Insert | :white_check_mark:
+Update | :white_check_mark:
+Select | :white_check_mark:
+Delete | :white_check_mark:
