@@ -1,5 +1,7 @@
 # USqlite
 
+[![Build status](https://ci.appveyor.com/api/projects/status/rx2xy5srhmv3kbkd/branch/master?svg=true)](https://github.com/ll4080333/USqlite/releases)
+
 ## 关于
 
 >  支持unity3d对象的Sqlite工具
