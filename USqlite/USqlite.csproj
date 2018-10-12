@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F759756A-720D-4877-886C-B311F8952BA3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>USqlite</RootNamespace>
+    <AssemblyName>USqlite</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Data.Sqlite">
+      <HintPath>E:\UProjects\USqlite\USqlite\Assets\Assets\Plugins\Sqlite\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="core\Attributes\AttributeHelper.cs" />
+    <Compile Include="core\Attributes\AutoIncrementAttribute.cs" />
+    <Compile Include="core\Attributes\ColumnAttribute.cs" />
+    <Compile Include="core\Attributes\NotNullAttribute.cs" />
+    <Compile Include="core\Attributes\PrimaryKeyAttribute.cs" />
+    <Compile Include="core\Attributes\TableAttribute.cs" />
+    <Compile Include="core\Attributes\UniqueAttribute.cs" />
+    <Compile Include="core\Attributes\USqliteSerializeAttribute.cs" />
+    <Compile Include="core\ColumnMapper.cs" />
+    <Compile Include="core\DatabaseTable.cs" />
+    <Compile Include="core\Exceptions\NullPointerException.cs" />
+    <Compile Include="core\Exceptions\USqliteException.cs" />
+    <Compile Include="core\InstanceFactory.cs" />
+    <Compile Include="core\Orm.cs" />
+    <Compile Include="core\SqlCommands\Base\BaseCommand.cs" />
+    <Compile Include="core\SqlCommands\Basic\DeleteCommand.cs" />
+    <Compile Include="core\SqlCommands\Basic\InsertCommand.cs" />
+    <Compile Include="core\SqlCommands\Basic\SelectCommand.cs" />
+    <Compile Include="core\SqlCommands\Basic\UpdateCommand.cs" />
+    <Compile Include="core\SqlCommands\Table\CreateTableCommand.cs" />
+    <Compile Include="core\SqlCommands\Table\DropTableCommand.cs" />
+    <Compile Include="core\SqliteCustomSerializeFunc.cs" />
+    <Compile Include="core\SqliteDatabase.cs" />
+    <Compile Include="core\TableMapper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sqlite3.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

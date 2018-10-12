@@ -1,0 +1,16 @@
+D:\uinnova\DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.csprojResolveAssemblyReference.cache
+D:\uinnova\DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.csproj.CoreCompileInputs.cache
+D:\uinnova\DoNetProjects\USqlite\USqlite\USqlite\bin\Debug\USqlite.dll
+D:\uinnova\DoNetProjects\USqlite\USqlite\USqlite\bin\Debug\USqlite.pdb
+D:\uinnova\DoNetProjects\USqlite\USqlite\USqlite\bin\Debug\Mono.Data.Sqlite.dll
+D:\uinnova\DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.csproj.CopyComplete
+D:\uinnova\DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.dll
+D:\uinnova\DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.pdb
+D:\uinnova\03_DoNetProjects\USqlite\USqlite\USqlite\bin\Debug\USqlite.dll
+D:\uinnova\03_DoNetProjects\USqlite\USqlite\USqlite\bin\Debug\USqlite.pdb
+D:\uinnova\03_DoNetProjects\USqlite\USqlite\USqlite\bin\Debug\Mono.Data.Sqlite.dll
+D:\uinnova\03_DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.csprojResolveAssemblyReference.cache
+D:\uinnova\03_DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.csproj.CoreCompileInputs.cache
+D:\uinnova\03_DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.csproj.CopyComplete
+D:\uinnova\03_DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.dll
+D:\uinnova\03_DoNetProjects\USqlite\USqlite\USqlite\obj\Debug\USqlite.pdb
